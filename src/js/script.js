@@ -57,9 +57,33 @@
       const thisProduct = this;
       thisProduct.id = id;
       thisProduct.data = data;
-      
-      console.log('new Product:', thisProduct);
+      thisProduct.renderInMenu(); 
+      thisProduct.initAccordion();
+      //console.log('new Product:', thisProduct);
     }
+    renderInMenu() {
+      const thisProduct = this;
+      const generatedHTML = templates.menuProduct(thisProduct.data);
+      thisProduct.element = utils.createDOMFromHTML(generatedHTML); // stworzony element DOM zapisujemy od razu jako właściwość naszej instancji, dzięki temu będziemy mieli do niego dostęp również w innych metodach instancji
+      //console.log('generatedHTML', generatedHTML);
+      const menuContainer = document.querySelector(select.containerOf.menu); // używamy querySelector do znalezienia kontenera produktów, którego selector zapisany jest w 'select.containerOf.menu, znaleziony element zapisujemy w stałej menuContainer
+      menuContainer.appendChild(thisProduct.element);
+      //console.log(thisProduct.element);
+    }
+    initAccordion() { // WAŻNE Ta pętli uruchamia się 4 razy, raz dla każdego produktu! 
+      const thisProduct = this;
+      const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable); //wyszukujemy element do klikania tylko w tym jednym produkcie (pamiętaj, że constructor wywoła tę funkcję dla każdej instancji produktu)
+      clickableTrigger.addEventListener('click', function(event)  { // z racji tego, że funkcja odpali sie dla każdego produktu, doda listener na click dla każdego produktu
+        event.preventDefault(); 
+        thisProduct.element.classList.toggle(classNames.menuProduct.wrapperActive);
+        const allProducts = document.querySelectorAll(select.all.menuProducts); //szukamy w całym dokumencie, czyli we wszystkich produktach
+        allProducts.forEach(product => {  //iterujemy po każdym produkcie znalezionym w document, patrz wyżej ^ dla każdego produktu sprawdzamy czy ma klasę 'active'
+          if(product != thisProduct.element){ // pętla przechodzi przez wszystkie produkty, i jeżeli to nie jest ten produkt który kliknąłem to zdejmuje z niego klasę 'active'
+            product.classList.remove(classNames.menuProduct.wrapperActive); // jak zakomentujemy ifa, to po kliknięciu opcje sie nie otworzą, bo nadaje ale potem w pętli forEach momentalnie odbiera klasę 'active'
+          } 
+        });
+      })
+    };
   }
   const app = {
     initMenu: function(){

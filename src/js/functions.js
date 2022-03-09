@@ -3,8 +3,10 @@
 const utils = {}; // eslint-disable-line no-unused-vars
 
 utils.createDOMFromHTML = function(htmlString) {
+  //console.log('htmlString', htmlString);
   let div = document.createElement('div');
   div.innerHTML = htmlString.trim();
+  //console.log('div.firstChild', div.firstChild);
   return div.firstChild;
 };
 
