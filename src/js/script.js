@@ -58,7 +58,10 @@
       thisProduct.id = id;
       thisProduct.data = data;
       thisProduct.renderInMenu(); 
+      thisProduct.getElements(); // zaraz po wyrenderowaniu elementów produktu w menu, robimy sobie skróty do różnych elementów w produkcie, 
       thisProduct.initAccordion();
+      thisProduct.initOrderForm(); 
+      thisProduct.processOrder(); 
       //console.log('new Product:', thisProduct);
     }
     renderInMenu() {
@@ -70,10 +73,18 @@
       menuContainer.appendChild(thisProduct.element);
       //console.log(thisProduct.element);
     }
+    getElements() {
+      const thisProduct = this; 
+      thisProduct.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      thisProduct.form = thisProduct.element.querySelector(select.menuProduct.form);
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
+      thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
+      thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem); 
+    }
     initAccordion() { // WAŻNE Ta pętli uruchamia się 4 razy, raz dla każdego produktu! 
       const thisProduct = this;
-      const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable); //wyszukujemy element do klikania tylko w tym jednym produkcie (pamiętaj, że constructor wywoła tę funkcję dla każdej instancji produktu)
-      clickableTrigger.addEventListener('click', function(event)  { // z racji tego, że funkcja odpali sie dla każdego produktu, doda listener na click dla każdego produktu
+      //const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable); //wyszukujemy element do klikania tylko w tym jednym produkcie (pamiętaj, że constructor wywoła tę funkcję dla każdej instancji produktu)
+      thisProduct.accordionTrigger.addEventListener('click', function(event)  { // z racji tego, że funkcja odpali sie dla każdego produktu, doda listener na click dla każdego produktu
         event.preventDefault(); 
         thisProduct.element.classList.toggle(classNames.menuProduct.wrapperActive);
         const allProducts = document.querySelectorAll(select.all.menuProducts); //szukamy w całym dokumencie, czyli we wszystkich produktach
@@ -84,6 +95,29 @@
         });
       })
     };
+    initOrderForm() {
+      const thisProduct = this; 
+      thisProduct.form.addEventListener('submit', function(event){
+        event.preventDefault(); 
+        thisProduct.processOrder(); 
+      });
+      thisProduct.formInputs.forEach(input => {
+        input.addEventListener('change', function(){
+          thisProduct.processOrder(); 
+        });
+      });
+      thisProduct.cartButton.addEventListener('click', function(event){
+          event.preventDefault(); 
+          thisProduct.processOrder(); 
+      });
+    }
+      
+  
+    processOrder() {
+      const thisProduct = this; 
+      
+      console.log('I\'m in processOrder()'); 
+    }
   }
   const app = {
     initMenu: function(){
