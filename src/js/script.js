@@ -80,6 +80,8 @@
       thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
       thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+      thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper); 
+      console.log('document.element', document);
     }
     initAccordion() { // WAŻNE Ta pętli uruchamia się 4 razy, raz dla każdego produktu! 
       const thisProduct = this;
@@ -112,33 +114,38 @@
       });
     }
 
+    // sprawdzić diva w document.query.... tutaj gdzieś będzie div ze wszystkimi obrazkami i tam trzeba dodać klase active
+
 
     processOrder() {
       const thisProduct = this;
-      const formData = utils.serializeFormToObject(thisProduct.form);
-      //console.log('formData', formData); 
+      const formData = utils.serializeFormToObject(thisProduct.form); 
       let price = thisProduct.data.price;
       for(let paramId in thisProduct.data.params){
         const param = thisProduct.data.params[paramId]; 
-        //console.log(paramId, param);
         for(let optionId in param.options) {
           const option = param.options[optionId];
-          //console.log('formData[paramId]', formData[paramId]);
-          //console.log('option', option);
-          //console.log('formData', formData);
-          if(formData[paramId].includes(optionId)) {
-            if(!option.default == true){
-              price += option.price;
+          const optionImage = thisProduct.imageWrapper.querySelector(`.${paramId}-${optionId}`);
+          const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
+          if(optionSelected) {
+              if(!option.default == true){
+                price += option.price;
+              }
+            } else {
+              if(option.default == true) {
+                price -= option.price;
+              }
             }
-          } else {
-            if(option.default == true) {
-              price -= option.price;
+            if(optionImage) {
+              if(optionSelected) {
+                optionImage.classList.add(classNames.menuProduct.imageVisible);
+              } else {
+                optionImage.classList.remove(classNames.menuProduct.imageVisible);
+              }
             }
           }
         }
-      }
       thisProduct.priceElem.innerHTML = price; 
-      //console.log('I\'m in processOrder()');
     }
   }
   const app = {
